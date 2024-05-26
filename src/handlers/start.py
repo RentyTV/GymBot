@@ -17,9 +17,7 @@ async def start(message: Message, session: AsyncSession) -> None:
     try:
         await orm_add_user(session, user_id=message.from_user.id, username=message.from_user.full_name, g_days=0, g_sets=0, g_timer=0.0, g_status=False)
     except Exception as e:
-        await message.answer(
-            f"Ошибка: \n{str(e)}\nОбратись к программеру, он опять денег хочет"
-        )
+       await message.answer(f"Error: \n{str(e)}")
 
 
 @router.message(CommandStart())
@@ -28,6 +26,4 @@ async def start(message: Message, session: AsyncSession) -> None:
     try:
         await orm_add_user(session, user_id=message.from_user.id, username=message.from_user.full_name, g_days=0, g_sets=0, g_timer=0.0, g_status=False)
     except Exception as e:
-        await message.answer(
-            f"Ошибка: \n{str(e)}\nОбратись к программеру, он опять денег хочет"
-        )
+        await message.answer(f"Error: \n{str(e)}")
