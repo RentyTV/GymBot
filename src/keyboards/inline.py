@@ -31,7 +31,7 @@ def traning_frage(training):
     builder.button(
         text="Bestätigen", callback_data=WahlAction(action="confirm")
     )
-    builder.adjust(5)
+    builder.adjust(3, 2)
     return builder.as_markup()
 
 

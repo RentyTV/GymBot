@@ -64,7 +64,7 @@ class Einstell(StatesGroup):
 async def einstellungen_fortsetz(callback: CallbackData, state: FSMContext):
     await callback.message.delete()
     if F.data == 'einstell_yes':
-        await callback.message.answer('Eingabe der Timerzeit im Format x.x')
+        await callback.message.answer('Eingabe der Timerzeit im Format x.x (sekunden)')
         await state.set_state(Einstell.time)
     else: 
         await callback.message.answer('Okey')
@@ -75,7 +75,10 @@ async def einstellungen_fortsetz_1(message: Message, state: FSMContext, session:
     try:
         time = float(message.text)
         await orm_update_user(session, message.from_user.id, g_timer=time)
-        await message.answer(f'Die Zahl: {time} wurde beibehalten.')
+        if message.from_user.id in config.ADMIN_IDS:
+            await message.answer(f'Die Zahl: {time} wurde beibehalten.', reply_markup=admin_kb)
+        else:
+            await message.answer(f'Die Zahl: {time} wurde beibehalten.', reply_markup=user_kb)
         await state.clear()
     except Exception as e:
         await message.answer(
