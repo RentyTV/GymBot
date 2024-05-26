@@ -6,32 +6,30 @@ rmk = ReplyKeyboardRemove()
 
 admin_kb = ReplyKeyboardMarkup(
     keyboard=[[
-            KeyboardButton(text="Training starter"),
-            KeyboardButton(text='Profile'),
-            KeyboardButton(text="Admin Panel")
+            KeyboardButton(text="💪 Training starter"),
+            KeyboardButton(text='👤 Profile'),
+            KeyboardButton(text="⚙️ Admin Panel")
         ]],
         resize_keyboard=True,
-        input_field_placeholder="Whale ein action"
     )
 
 
 admin_panel_kb = ReplyKeyboardMarkup(
     keyboard=[[
-            KeyboardButton(text="Mailing"),
-            KeyboardButton(text='User Daten'),
-            KeyboardButton(text='Send sms an'),
-            KeyboardButton(text="Admin kb")
+            KeyboardButton(text="📤 Mailing"),
+            KeyboardButton(text='👨‍💻 User Daten'),
+            KeyboardButton(text='📲 Send sms an'),
+            KeyboardButton(text="⌨️ Admin kb")
         ]],
         resize_keyboard=True,
-        input_field_placeholder="Whale ein action"
     )
 
 
 
 user_kb = ReplyKeyboardMarkup(
     keyboard=[[
-        KeyboardButton(text="Training starter"),
-        KeyboardButton(text='Profile')
+        KeyboardButton(text="💪 Training starter"),
+        KeyboardButton(text='👤 Profile')
     ]], 
     resize_keyboard=True,
 )
@@ -40,12 +38,12 @@ user_kb = ReplyKeyboardMarkup(
 user_training_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Set hinzufügen"),
-            KeyboardButton(text='Training Stats')
+            KeyboardButton(text="➕ Set hinzufügen"),
+            KeyboardButton(text='📋 Training Stats')
         ],
         [
-            KeyboardButton(text='Training beenden'),
-            KeyboardButton(text='Timer Starten')
+            KeyboardButton(text='❌ Training beenden'),
+            KeyboardButton(text='⏱ Timer Starten')
         ]
     ],
     resize_keyboard=True

@@ -29,7 +29,7 @@ def traning_frage(training):
             text=f'{icon} {action.title()}', callback_data=WahlAction(action=f'{action}')
         )
     builder.button(
-        text="Confirm", callback_data=WahlAction(action="confirm")
+        text="Bestätigen", callback_data=WahlAction(action="confirm")
     )
     builder.adjust(5)
     return builder.as_markup()
@@ -47,7 +47,7 @@ def sset_create(user_training_data, set_id, repetitions):
 einstellungen = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text="Einstellungen", callback_data='einstellungen')
+            InlineKeyboardButton(text="⚙️ Einstellungen", callback_data='einstellungen')
         ]
     ]
 )

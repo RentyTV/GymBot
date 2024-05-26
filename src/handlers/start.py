@@ -13,7 +13,8 @@ router = Router()
 
 @router.message(CommandStart(), IsAdmin())
 async def start(message: Message, session: AsyncSession) -> None:
-    await message.answer(f"Hello, master", reply_markup=admin_kb)
+    await message.answer_photo(photo='AgACAgIAAxkBAAPyZlOHb9FgLJzf1Nrbt-JbkHpqI48AArDeMRtdIZhKH1QUp1Q0a1IBAAMCAAN4AAM1BA', caption=f"<b>Hallo {message.from_user.first_name}!!!</b>\n\n<b>Du bist ein ADMIN</b>", reply_markup=admin_kb)
+    # await message.answer(f"<b>Hallo {message.from_user.first_name}!!!</b>\n\n<b>Du bist ein ADMIN</b>", reply_markup=admin_kb)
     try:
         await orm_add_user(session, user_id=message.from_user.id, username=message.from_user.full_name, g_days=0, g_sets=0, g_timer=0.0, g_status=False)
     except Exception as e:
@@ -24,7 +25,8 @@ async def start(message: Message, session: AsyncSession) -> None:
 
 @router.message(CommandStart())
 async def start(message: Message, session: AsyncSession) -> None:
-    await message.answer(f"Willkommen bei Gym Bot, deinem persönlichen Assistenten in der Welt des Fitness.", reply_markup=user_kb)
+    await message.answer_photo(photo='AgACAgIAAxkBAAPyZlOHb9FgLJzf1Nrbt-JbkHpqI48AArDeMRtdIZhKH1QUp1Q0a1IBAAMCAAN4AAM1BA', caption=f"<b>Hallo {message.from_user.first_name}!!!</b>\n\nWillkommen bei Gym Bot, deinem persönlichen Assistenten in der Welt des Fitness.", reply_markup=user_kb)
+    # await message.answer(f"<b>Hallo {message.from_user.first_name}!!!</b>\n\nWillkommen bei Gym Bot, deinem persönlichen Assistenten in der Welt des Fitness.", reply_markup=user_kb)
     try:
         await orm_add_user(session, user_id=message.from_user.id, username=message.from_user.full_name, g_days=0, g_sets=0, g_timer=0.0, g_status=False)
     except Exception as e:

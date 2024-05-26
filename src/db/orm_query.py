@@ -54,8 +54,8 @@ async def orm_add_user_training(session: AsyncSession, user_id: int):
     await session.commit()
 
 
-async def orm_get_user_training_via_data(session: AsyncSession, created_date: date):
-    query = select(User_Training).where(func.date(User_Training.created) == created_date)
+async def orm_get_user_training_via_data(session: AsyncSession, user_id: int, created_date: date):
+    query = select(User_Training).where(User_Training.user_id == user_id).where(func.date(User_Training.created) == created_date)
     # query = select(User_Training).where(func.substr(User_Training.created, 0, 9) == created_date)
     # query = select(User_Training).where(User_Training.created, 0, 9 == created_date)
     result = await session.execute(query)

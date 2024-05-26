@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import random
 from datetime import datetime
 
@@ -9,6 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
+from config_reader import config
 
 from db.orm_query import (
     orm_add_user_sets, orm_add_user_training, orm_check_user_sets,
@@ -25,20 +25,20 @@ current_date = datetime.now().date()
 # current_date = current_date_1.strftime("%Y-%m-%d")
 
 
-@router.message(F.text == 'Profile')
+@router.message(F.text == '👤 Profile')
 async def profile(message: Message, session: AsyncSession):
     try:
         user = await orm_get_user(session, message.from_user.id)
         if user:
             if not user.g_status:
-                await message.answer(
+                await message.answer_photo(photo='AgACAgIAAxkBAAPlZlN-v7D4f6nF3nEt3F_by1eO6O4AAvzYMRs0XKBKYKomTD0JEQUBAAMCAAN5AAM1BA', caption=
                     "Hier ist dein Profil\n"
                     "---------------\n"
-                    f"Dein ID: <code>{user.user_id}</code>\n"
-                    f"User name: {user.username}\n"
-                    f"Gym days: {user.g_days}\n"
-                    f"Gym sets: {user.g_sets}\n"
-                    f"Rest timer: {user.g_timer}\n"
+                    f"🆔: <code>{user.user_id}</code>\n"
+                    f"🤩 Name: {user.username}\n"
+                    f"🗓 Gym days: {user.g_days}\n"
+                    f"🏋️ Gym sets: {user.g_sets}\n"
+                    f"⏱ Rest timer: {user.g_timer}\n"
                     f"Registration Zeit: {user.created}", reply_markup=einstellungen)
             else:
                 await message.answer("Du trainierst bereits")
@@ -84,16 +84,16 @@ async def einstellungen_fortsetz_1(message: Message, state: FSMContext, session:
 
 
 # Training starter handler
-@router.message(F.text == 'Training starter')
+@router.message(F.text == '💪 Training starter')
 async def training_start(message: Message, session: AsyncSession):
     try:
         user = await orm_get_user(session, message.from_user.id)
         if not user.g_status:
-            training_check = await orm_get_user_training_via_data(session, created_date=current_date)
+            training_check = await orm_get_user_training_via_data(session, user_id=message.from_user.id, created_date=current_date)
             if training_check is None:
-                await orm_add_user_training(session, user_id=message.from_user.id)
+                await orm_add_user_training(session, message.from_user.id)
                 await asyncio.sleep(0.3)
-                training = await orm_get_user_training_via_data(session, current_date) 
+                training = await orm_get_user_training_via_data(session, message.from_user.id, current_date) 
                 await message.answer('Welche Muskeln möchtest du heute trainieren?', reply_markup=traning_frage(training))
             else:
                 await message.answer('1 Tag - 1 Training. Du darfst nicht mehr Trainieren!')
@@ -107,7 +107,7 @@ async def training_start(message: Message, session: AsyncSession):
 @router.callback_query(WahlAction.filter())
 async def training_n_start(callback: CallbackQuery, callback_data: WahlAction, session: AsyncSession):
     try:
-        training = await orm_get_user_training_via_data(session, current_date)
+        training = await orm_get_user_training_via_data(session, callback.from_user.id, current_date)
         act = str(callback_data.action)
         if act != 'confirm':
             if getattr(training, act) is not True:
@@ -138,10 +138,10 @@ async def training_n_start(callback: CallbackQuery, callback_data: WahlAction, s
 
 
 # Training Stats handler
-@router.message(F.text == 'Training Stats')
+@router.message(F.text == '📋 Training Stats')
 async def training_stats(message: Message, session: AsyncSession):
     try:
-        user = await orm_get_user_training_via_data(session, created_date=current_date)
+        user = await orm_get_user_training_via_data(session, message.from_user.id, current_date)
         response = f"Hier ist dein Training Stats\n---------------\nHeute machts du:\n"
         attributes = ['arme', 'rucken', 'bauch', 'beine', 'brust']
         for attribute in attributes:
@@ -159,14 +159,14 @@ async def training_stats(message: Message, session: AsyncSession):
 
 
 # Training Stats handler
-@router.message(F.text == 'Training beenden')
+@router.message(F.text == '❌ Training beenden')
 async def training_end(message: Message, session: AsyncSession):
     try:
         user = await orm_get_user(session, message.from_user.id)
         if user.g_status == True: 
             await orm_update_user(session, message.from_user.id, g_status=False, g_days=user.g_days + 1)
             # await orm_update_user_status(session, message.from_user.id, g_status=False)
-            if IsAdmin():
+            if message.from_user.id in config.ADMIN_IDS:
                 await message.answer('Dein Training ist abgeschlossen', reply_markup=admin_kb)
             else:
                 await message.answer('Dein Training ist abgeschlossen', reply_markup=user_kb)
@@ -181,7 +181,7 @@ class Sset(StatesGroup):
     repetitions = State()
 
 
-@router.message(StateFilter(None), F.text == 'Set hinzufügen')
+@router.message(StateFilter(None), F.text == '➕ Set hinzufügen')
 async def make_new_set(message: Message, state: FSMContext):
     try:
         # user_training_data = await orm_get_user_training_via_data(session, created_date=current_date)
@@ -222,11 +222,11 @@ async def make_new_set_s2(message: Message, state: FSMContext, session: AsyncSes
             await message.answer('es hat sich verdoppelt')
             check2 = await check_user_sets(session, message)
             await orm_add_user_sets(session, check2, message.from_user.id, 'None', str(data['notiz']), None)
-            user_training_data = await orm_get_user_training_via_data(session, created_date=current_date)
+            user_training_data = await orm_get_user_training_via_data(session, message.from_user.id, current_date)
             await message.answer('Wählen Sie aus, für welchen Körperteil Sie einen Satz gemacht haben', reply_markup=sset_create(user_training_data, check2, repetitions_from_user))
         else:
             await orm_add_user_sets(session, check, message.from_user.id, 'None', str(data['notiz']), None)
-            user_training_data = await orm_get_user_training_via_data(session, created_date=current_date)
+            user_training_data = await orm_get_user_training_via_data(session, message.from_user.id, current_date)
             await message.answer('Wählen Sie aus, für welchen Körperteil Sie einen Satz gemacht haben', reply_markup=sset_create(user_training_data, check, repetitions_from_user))
         await state.clear()
     except Exception as e:
@@ -243,7 +243,7 @@ async def make_new_set_s3(callback: CallbackQuery, callback_data: Sset_Add, sess
     try:
         user = await orm_get_user(session, callback.from_user.id)
         await orm_update_user(session, callback.from_user.id, g_sets=user.g_sets + 1)
-        current_training = await orm_get_user_training_via_data(session, current_date)
+        current_training = await orm_get_user_training_via_data(session, callback.from_user.id, current_date)
         setattr(current_training, act, getattr(current_training, act) + 1)
         # await orm_update_user_training(session, current_date, act=getattr(current_training, act) + 1)
         await orm_update_user_sets(session, set_id, muskul_typ=act, repetitions=rps)
@@ -254,7 +254,7 @@ async def make_new_set_s3(callback: CallbackQuery, callback_data: Sset_Add, sess
             f"Error: \n{str(e)}")
 
 
-@router.message(F.text == 'Timer Starten')
+@router.message(F.text == '⏱ Timer Starten')
 async def timer_starten(message: Message, session: AsyncSession):
     user = await orm_get_user(session, message.from_user.id)
     await message.answer(f"Ihr Timer hat begonnen. Timer-Zeit:{user.g_timer}")
